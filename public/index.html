@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <h3>Local Chat</h3>
+    <textarea id="log" rows="12" cols="80" readonly></textarea><br />
+    <input id="msg" placeholder="Type a message" size="60" />
+    <button id="send">Send</button>
+    <script>
+      const log = document.getElementById("log");
+      const input = document.getElementById("msg");
+      document.getElementById("send").onclick = async () => {
+        const text = input.value.trim();
+        if (!text) return;
+        log.value += `\nYou: ${text}`;
+        input.value = "";
+        const r = await fetch("/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ messages: [{ role: "user", content: text }] }),
+        });
+        const data = await r.json();
+        log.value += `\nBot: ${data.reply}\n`;
+        log.scrollTop = log.scrollHeight;
+      };
+    </script>
+  </body>
+</html>
